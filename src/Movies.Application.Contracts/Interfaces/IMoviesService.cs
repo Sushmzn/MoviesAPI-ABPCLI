@@ -6,16 +6,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
-namespace Movies
+namespace Movies.Interfaces
 {
     public interface IMoviesService : IApplicationService
     {
         Task<List<Crud>> GetAllMovie();
         Task<Create> CreateMovie(Create create);
-        Task<Create> EditMovie(Guid id, Create create);
+        Task<Update> UpdateMovie(Guid id, Update create);
         Task<CrudDTO> GetMovieById(Guid id);
         Task<CrudDTO> GetMovieByName(string Name);
-        //Task<CrudDTO> Search(string method);
-        Task<List<Crud>> SearchByData( string data);
+        Task<List<Crud>> SearchByData(string data);
     }
 }

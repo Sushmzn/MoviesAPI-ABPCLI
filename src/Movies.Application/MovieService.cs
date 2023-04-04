@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Movies.DTO;
 using Movies.Entities;
+using Movies.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -60,12 +61,14 @@ namespace Movies
             return null;
         }
 
-        public async Task<Create> EditMovie(Guid id, [FromForm] Create create)
+        public async Task<Update> UpdateMovie(Guid id, [FromForm] Update create)
         {
             try
             {
+                var Data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
                 var fileName = "";
-                if (create.Poster != null)
+
+                if (Data != null && create.Poster != null)
                 {
                     fileName = $"{create.Name}-{Path.GetExtension(create.Poster.FileName)}";
                     var path = Path.Combine(@"D:\Amnil\MoviesApi\aspnet-core\src\Movies.Application\Posters\" + fileName);
@@ -73,14 +76,13 @@ namespace Movies
                     {
                         await create.Poster.CopyToAsync(stream);
                     }
+                    Data.Poster=fileName;
                 }
-                var Data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
                 Data.Name = create.Name;
                 Data.Description = create.Description;
                 Data.ReleasedDate = create.ReleasedDate;
                 Data.Genre = create.Genre;
                 Data.Rating = create.Rating;
-                Data.Poster = fileName;
                 await _repository.UpdateAsync(Data);
             }
             catch (Exception ex)
@@ -92,6 +94,8 @@ namespace Movies
 
         public async Task<List<Crud>> GetAllMovie()
         {
+            //No Include 
+            //var movie = await _repository.GetQueryableAsync().Include(m=>m.Actor);
             var movie = await _repository.GetQueryableAsync();
             var actor = await _ActorRepository.GetQueryableAsync(); 
 
@@ -104,9 +108,8 @@ namespace Movies
                 Genre = x.Genre.ToString(),
                 Rating = x.Rating.ToString(),
                 Poster = x.Poster,
-                //No Actor Names showed!!!!!!!!!!!!!!!!!!!!!
+                ActorName = string.Join(", ", actor.Where(a => x.ActorId.Contains(a.Id)).Select(a => a.Name))
             });
-            
             return data.ToList();
         }
 
@@ -142,8 +145,8 @@ namespace Movies
         {
             try
             {
-
-                var actor = from x in await _repository.GetQueryableAsync()
+                var actor = await _ActorRepository.GetQueryableAsync();
+                var movie = from x in await _repository.GetQueryableAsync()
                             where x.Name == Name
                             select new CrudDTO()
                             {
@@ -152,12 +155,12 @@ namespace Movies
                                 ReleasedDate = x.ReleasedDate,
                                 Genre = x.Genre.ToString(),
                                 Rating = x.Rating.ToString(),
-                                ActorName = x.Actor.Name,
+                                ActorName = string.Join(", ", actor.Where(a => x.ActorId.Contains(a.Id)).Select(a => a.Name)),
                                 Poster = x.Poster
                             };
                 if (actor != null)
                 {
-                    return actor.FirstOrDefault();
+                    return movie.FirstOrDefault();
                 }
                 return null;
             }

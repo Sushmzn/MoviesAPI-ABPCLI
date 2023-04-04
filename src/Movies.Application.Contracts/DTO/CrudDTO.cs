@@ -33,7 +33,7 @@ namespace Movies.DTO
         public DateTime ReleasedDate { get; set; }
         public string Genre { get; set; }
         public string Rating { get; set; }
-        public List<Guid> ActorId { get; set; }
+       
         public string ActorName { get; set; }
         [BindNever]
         public string Poster { get; set; }
@@ -51,6 +51,18 @@ namespace Movies.DTO
         [IgnoreDataMember]
         public IFormFile Poster { get; set; }
     }
+    public class Update
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime ReleasedDate { get; set; }
+        public Genre Genre { get; set; }
+        public Rating Rating { get; set; }
+        public List<Guid> ActorId { get; set; }
+        [IgnoreDataMember]
+        public IFormFile? Poster { get; set; }
+    }
 
     public class AddActor
     {
@@ -58,6 +70,13 @@ namespace Movies.DTO
         public string Actor { get; set; }
         public string Biography { get; set; }
     }
+    public class ImportActor
+    {
+        [Required]
+        public string Name { get; set; }
+        public string Biography { get; set; }
+    }
+
     public class SelectActor 
     {
         public string Actor { get; set; }
