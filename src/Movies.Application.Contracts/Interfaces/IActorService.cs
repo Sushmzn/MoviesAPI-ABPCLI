@@ -8,6 +8,7 @@ using Volo.Abp.Application.Services;
 
 namespace Movies.Interfaces
 {
+
     public interface IActorService : IApplicationService
     {
         Task<List<GetActor>> GetAllActor();

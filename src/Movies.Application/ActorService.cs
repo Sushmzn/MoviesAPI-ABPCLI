@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using ExcelDataReader;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Movies.DTO;
@@ -16,7 +17,7 @@ using Volo.Abp.Domain.Repositories;
 namespace Movies
 {
     //[AllowAnonymous] to show for all without logging in.
-
+    [Authorize]
     public class ActorService : MoviesAppService, IActorService
     {
         private readonly IRepository<Movies.Entities.Actor, Guid> _repository;
